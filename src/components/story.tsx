@@ -46,7 +46,7 @@ export default function StoryComponent() {
   return (
       <div className="w-72 h-128 rounded-xl bg-white shadow-lg overflow-hidden relative"
         onMouseEnter={() => {
-          if (!isHovered) {
+          if (!isHovered ) {
             setIsHovered(true);
             setTimerKey((k) => k + 1); 
           }
