@@ -3,12 +3,13 @@ import mob from "../assets/mob.jpg";
 import strange from "../assets/strange.jpg";
 import sukuna from "../assets/sukuna.png";
 import takezo from "../assets/takezo.webp";
+import mori from "../assets/mori.mp4";
 
 export const contentArray = [
   {
     id: 1,
-    type: 'image',
-    image: itachi
+    type: 'video',
+    video: mori
   },
   {
     id: 2,
@@ -29,5 +30,10 @@ export const contentArray = [
     id: 5,
     type: 'image',
     image: takezo
+  },
+  { 
+    id: 6,
+    type: 'image',
+    image: itachi
   },
 ]

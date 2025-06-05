@@ -7,12 +7,25 @@ export default function StoryComponent() {
   const [timerKey, setTimerKey] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<number | null>(null);
+  const [duration, setDuration] = useState(3);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const handleMetaDataLoaded = () => {
+    if (contentArray[currentIndex].type === 'video') {
+      const videoDuration = videoRef.current?.duration || 3;
+      setDuration(videoDuration);
+    } else {
+      if (duration !== 3) {
+        setDuration(3); 
+      }
+    }
+  };
 
   useEffect(() => {
     if (isHovered) {
       timerRef.current = setTimeout(() => {
         handleNext();
-      }, 3000);
+      }, duration * 1000);
     };
 
     return () => {
@@ -20,24 +33,31 @@ export default function StoryComponent() {
         clearTimeout(timerRef.current);
       }
     };
-  }, [isHovered, currentIndex, timerKey]);
+  }, [isHovered, currentIndex, timerKey, duration]);
 
   const handleNext = () => {
+    if (contentArray[(currentIndex + 1) % contentArray.length].type === 'image') {
+    setDuration(3);
+    }
     setCurrentIndex((prev) => (prev + 1) % contentArray.length);
-    setTimerKey((k) => k + 1); // Reset progress animation
+    setTimerKey((k) => k + 1); 
   };
 
   return (
       <div className="w-72 h-128 rounded-xl bg-white shadow-lg overflow-hidden relative"
         onMouseEnter={() => {
-          setIsHovered(true);
-          setTimerKey((k) => k + 1); // Start animation fresh
+          if (!isHovered) {
+            setIsHovered(true);
+            setTimerKey((k) => k + 1); 
+          }
+          videoRef.current?.play();
         }}
         onMouseLeave={() => {
           setIsHovered(false);
           if (timerRef.current !== null){
             clearTimeout(timerRef.current);
           }
+          videoRef.current?.pause();
         }}
       >
       {/* Progress bar */}
@@ -47,11 +67,12 @@ export default function StoryComponent() {
           className="absolute top-0 left-0 h-1 bg-violet-500"
           initial={{ width: 0 }}
           animate={{ width: '100%' }}
-          transition={{ duration: 3, ease: 'linear' }}
+          transition={{ duration: duration, ease: 'linear' }}
         />
       )}
 
         <AnimatePresence mode="wait">
+          { contentArray[currentIndex].type === 'image' ?
           <motion.img
             key={contentArray[currentIndex].id}
             src={contentArray[currentIndex].image}
@@ -61,9 +82,22 @@ export default function StoryComponent() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0}}
             onClick={handleNext}
+          /> : 
+          <motion.video
+            ref={videoRef}
+            key={contentArray[currentIndex].id}
+            src={contentArray[currentIndex].video}
+            className="w-full h-full object-cover cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0}}
+            onClick={handleNext} 
+            onLoadedMetadata={handleMetaDataLoaded}
+            autoPlay
+            muted 
           />
+          }          
         </AnimatePresence>
       </div>
   )
 };
-
