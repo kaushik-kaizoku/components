@@ -14,10 +14,7 @@ export default function StoryComponent() {
     if (contentArray[currentIndex].type === 'video') {
       const videoDuration = videoRef.current?.duration || 3;
       setDuration(videoDuration);
-    } else {
-      if (duration !== 3) {
-        setDuration(3); 
-      }
+      setTimerKey((k) => k + 1); 
     }
   };
 
@@ -38,6 +35,9 @@ export default function StoryComponent() {
   const handleNext = () => {
     if (contentArray[(currentIndex + 1) % contentArray.length].type === 'image') {
     setDuration(3);
+    } else {
+      const videoDuration = videoRef.current?.duration || 3;  
+      setDuration(videoDuration);
     }
     setCurrentIndex((prev) => (prev + 1) % contentArray.length);
     setTimerKey((k) => k + 1); 
@@ -50,14 +50,12 @@ export default function StoryComponent() {
             setIsHovered(true);
             setTimerKey((k) => k + 1); 
           }
-          videoRef.current?.play();
         }}
         onMouseLeave={() => {
           setIsHovered(false);
           if (timerRef.current !== null){
             clearTimeout(timerRef.current);
           }
-          videoRef.current?.pause();
         }}
       >
       {/* Progress bar */}
